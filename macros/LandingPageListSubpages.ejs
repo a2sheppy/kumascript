@@ -4,11 +4,15 @@
 // List is presented in a two-column view where possible.
 //
 // Parameters:
-//  None
+//  Same as SubpagesWithSummaries (an array of Page objects to list instead
+//  of subpages)
 
-var html = template("SubpagesWithSummaries");
+// Ask SubpagesWithSummaries for the formatted page list, given
+// the parameters specified.
+var html = template("SubpagesWithSummaries", arguments);
 
-// Now we have the entire list in HTML. Let's go through it and try to split it into two columns by force.
+// Now we have the entire list in HTML. Let's go through it and try to 
+// split it into two columns by force.
 %>
 
 <%-template("MakeColumnsForDL", [html])%>
