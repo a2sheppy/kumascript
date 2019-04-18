@@ -1,0 +1,83 @@
+<%
+/*
+ * Output a single entry for a definition list (<dl>) listing
+ * page titles and their summaries, in our standard format.
+ *
+ * Parameters:
+ *  $0  : Slug for the page to output
+ *  $1  : Optional options object; see below
+ *
+ * Options object:
+ *  {
+ *    statusIcons : A Boolean indicating whether or not the
+ *                  various status icons should be added after
+ *                  the title
+ *    titleWrapper: The name of an element to wrap the title in
+ *  }
+ */
+
+// IMPORTS
+// -------
+
+const htmlEscape = kuma.htmlEscape;
+
+// GENERAL VARIABLES
+// -----------------
+
+let output = "";
+let rtlLocales = ["ar", "he", "fa"];
+let localStrings = string.deserialize(await template("L10n:Common"));
+
+// ELEMENTS THAT CAN WRAP THE TITLE
+// --------------------------------
+
+const validTitleWrappers = ["code", "kbd"]
+
+// GET INPUTS; BASIC VALIDATION
+// ----------------------------
+
+let slug = $0;
+
+let options = {
+  statusIcons : $1 && $1.statusIcons && typeof $1.statusIcons === 'boolean'
+              ? $1.statusIcons
+              : false,
+  titleWrapper: $1 && $1.titleWrapper && typeof $1.titleWraper === 'string'
+                    && validTitleWrappers.includes($1.titleWrapper)
+              ? $1.titleWrapper
+              : null
+};
+
+// GET INFO ABOUT THE PAGE
+// -----------------------
+
+let page = await wiki.getPage(slug);
+let title;
+let summary;
+
+if (page) {
+  title = htmlEscape(page.title);
+  summary = page.summary;
+} else {
+  title = mdn.getLocalString(localStrings, "MissingPage");
+  summary = mdn.getLocalString(localStrings, "summary");
+}
+
+// Wrap the title in the wrapper string
+
+let openTag;
+let closeTag;
+
+console.log(`titleWrapper: ${options.titleWrapper}`);
+if (options.titleWrapper !== null) {
+  openTag = `<${options.titleWrapper}>`;
+  closeTag = `</${options.titleWrapper}>`;
+} else {
+  openTag = "";
+  closeTag = "";
+}
+
+title = `${openTag}${title}${closeTag}`;
+%>
+<dt><a href="<%- slug %>"><%- title %></a></dt>
+<dd><%- summary %></dd>

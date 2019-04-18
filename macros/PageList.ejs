@@ -1,0 +1,112 @@
+<%
+/*
+ * Output a <dl> containing links to the specified list of
+ * pages.
+ *
+ * Parameters:
+ *  $0  : Configuration object
+ *
+ * Options object:
+ *  {
+ *    pages       : Array of pages to list
+ *    statusIcons : A Boolean indicating whether or not the
+ *                  various status icons should be added after
+ *                  the title
+ *    titleWrapper: The name of an element to wrap the title in
+ *  }
+ */
+
+// IMPORTS
+// -------
+
+const htmlEscape = kuma.htmlEscape;
+
+// GENERAL VARIABLES
+// -----------------
+
+let rtlLocales = ["ar", "he", "fa"];
+let localStrings = string.deserialize(await template("L10n:Common"));
+
+// ELEMENTS THAT CAN WRAP THE TITLE
+// --------------------------------
+
+const validTitleWrappers = ["code", "kbd"];
+
+// GET INPUTS; BASIC VALIDATION
+// ----------------------------
+
+let options = {
+  statusIcons : $0 && $0.statusIcons && typeof $0.statusIcons === 'boolean'
+              ? $0.statusIcons
+              : false,
+  titleWrapper: $0 && $0.titleWrapper && typeof $0.titleWrapper === 'string'
+                  && validTitleWrappers.includes($0.titleWrapper)
+              ? $0.titleWrapper
+              : null,
+  base        : $0 && $0.base && typeof $0.base === 'string'
+              ? $0.base
+              : ""
+};
+
+if (options.base.length && options.base[options.base.length-1] != "/") {
+  options.base += "/";
+}
+
+let pages = $0 && $0.pages && typeof $0.pages === 'object' && typeof $0.pages[0] === 'string'
+            ? $0.pages
+            : null;
+
+// GET INFO ABOUT ONE PAGE
+// -----------------------
+
+async function onePage(slug) {
+  let page = await wiki.getPage(slug);
+  let title;
+  let summary;
+
+  if (page) {
+    title = htmlEscape(page.title);
+    summary = page.summary;
+  } else {
+    title = mdn.getLocalString(localStrings, "MissingPage");
+    summary = mdn.getLocalString(localStrings, "summary");
+  }
+
+  // Wrap the title in the wrapper string
+
+  let openTag;
+  let closeTag;
+
+  if (options.titleWrapper !== null && options.titleWrapper) {
+    openTag = `<${options.titleWrapper}>`;
+    closeTag = `</${options.titleWrapper}>`;
+  } else {
+    openTag = "";
+    closeTag = "";
+  }
+
+  title = `${openTag}${title}${closeTag}`;
+
+  let html = `<dt><a href="${slug}">${title}</a></dt>
+  <dd>${summary}</dd>`;
+
+  return html;
+}
+
+// ITERATE OVER THE PAGE LIST AND BUILD THE MENU
+// ---------------------------------------------
+
+let html = "";
+
+async function buildMenu() {
+  let output = "";
+
+  for (const slug of pages) {
+    output += await onePage(options.base + slug);
+  }
+  return output;
+}
+
+html = await buildMenu();
+%>
+<%- html %>
