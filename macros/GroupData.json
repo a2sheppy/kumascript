@@ -86,7 +86,8 @@
         },
         "Clipboard API": {
             "interfaces": [ "Clipboard",
-                            "ClipboardEvent"],
+            "ClipboardEvent",
+            "ClipboardItem"],
             "dictionaries": [ "ClipboardPermissionDescriptor" ],
             "methods":    [],
             "properties": [ "Navigator.clipboard" ],
@@ -764,8 +765,15 @@
             "interfaces": [ "MediaMetadata",
                             "MediaSession"],
             "methods":    [],
-            "properties": [],
-            "events":     []
+            "properties": [ "navigator.mediaSession" ],
+            "events":     [],
+            "dictionaries": [ "MediaImage",
+                              "MediaMetadataInit",
+                              "MediaPositionState",
+                              "MediaSessionActionDetails" ],
+            "types":      [ "MediaSessionAction",
+                            "MediaSessionPlaybackState" ],
+            "callbacks":  [ "MediaSessionActionHandler" ]
         },
         "Media Source Extensions": {
             "overview": [ "Media Source Extensions API" ],
@@ -1289,6 +1297,14 @@
             "properties": [],
             "events":     []
         },
+        "Visual Viewport": {
+            "overview":   [ "Visual Viewport API"],
+            "interfaces": [ "VisualViewport" ],
+            "methods":    [],
+            "properties": [ "Window.visualViewport" ],
+            "events":     [ "VisualViewport: resize",
+                            "VisualViewport: scroll" ]
+        },
         "Web Animations": {
             "overview":   [ "Web Animations API" ],
             "guides":     [ "/docs/Web/API/Web_Animations_API/Using_the_Web_Animations_API",
@@ -1669,8 +1685,7 @@
         },
         "Web Storage API": {
             "overview":   [ "Web Storage API" ],
-            "guides":     [ "/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API",
-                            "/docs/Web/API/Web_Storage_API/Local_storage" ],
+            "guides":     [ "/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API"],
             "interfaces": [ "Storage",
                             "StorageEvent" ],
             "methods":    [],
